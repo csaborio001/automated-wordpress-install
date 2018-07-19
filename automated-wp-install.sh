@@ -51,10 +51,11 @@ mv wp-content _content
 wp core install --url=localhost:8888/"${database_name}" --title="TBD" --admin_user="${RANDOM_USERNAME}" --admin_password="${RANDOM_PASSWORD}" --admin_email="${email_admin}"
 
 
-if [ -n $1 ] # If there is something in the first parameter
+if [ -n "$1" ] # If there is something in the first parameter
 then
-    if [ $1 = '-plugins' ] #BUG: This always gets executed even if no parameter is passed
+    if [ $1 = '-plugins' ] # If parameter's name is plugins
     then 
+    echo "IM IN"
     ### --- REMOTE PLUGINS --- ###
     echo "Installing remote plugins..."
     # Install and Activate toolbar-publish-button, incorporate a save button in the toolbar
@@ -102,9 +103,9 @@ then
     fi
 fi
 
-if [ -n $2 ]
+if [ -n "$2" ] # If there is something in the second parameter
 then
-    if [ $2 = '-local' ]
+    if [ $2 = '-local' ] # If parameter's name is local
     then
     echo "Installing local plugins..."
         # Install and activate Advanced Custom Fields
