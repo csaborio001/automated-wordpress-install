@@ -7,11 +7,11 @@
 
 # Usage:
 
-    # automated-wp-install.sh -none -none                      (installs WordPress)
+    # automated-wp-install.sh                       (installs WordPress)
     # automated-wp-install.sh -plugins              (installs Wordpress + remote plugins specified)
     # automated-wp-install.sh -plugins -local       (installs Wordpress + remote plugins specified + local plugins specified)
 
-# Version 1.0
+# Version 1.0.1
 
 # Generate a random username and random password for admin
 RANDOM_USERNAME="$(openssl rand -base64 6)"
@@ -55,7 +55,6 @@ if [ -n "$1" ] # If there is something in the first parameter
 then
     if [ $1 = '-plugins' ] # If parameter's name is plugins
     then 
-    echo "IM IN"
     ### --- REMOTE PLUGINS --- ###
     echo "Installing remote plugins..."
     # Install and Activate toolbar-publish-button, incorporate a save button in the toolbar
