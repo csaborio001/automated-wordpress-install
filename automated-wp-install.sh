@@ -100,6 +100,9 @@ then
     # Install plugin for configuring logon sreen
     wp plugin install login-customizer --activate
 
+    # Install plugin for analyzing Worpdpress log files
+    wp plugin install log-viewer --activate    
+
     fi
 fi
 
