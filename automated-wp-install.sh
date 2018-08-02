@@ -102,6 +102,9 @@ then
     # Install plugin for analyzing Worpdpress log files
     wp plugin install log-viewer --activate    
 
+    # Install plugin for optimizing databases
+    wp plugin install wp-optimize --activate
+
     fi
 fi
 
