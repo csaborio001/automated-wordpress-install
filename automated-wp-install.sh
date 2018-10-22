@@ -31,9 +31,11 @@ read email_admin
 #Download the core
 wp core download
 # Create wp-config
-wp config create --dbuser=root --dbpass=root --dbname="${database_name}" --extra-php <<PHP
-define( 'WP_DEBUG', true );
-define( 'WP_DEBUG_LOG', true );
+wp config create --dbuser=root --dbpass=root --dbname="${database_name}" --force --extra-php <<PHP
+define('WP_DEBUG', true);
+define('WP_DEBUG_LOG', true);
+define('WP_DEBUG_DISPLAY', true);
+
 // Directory of the project
 define('APP_ROOT', dirname(__FILE__));
 
