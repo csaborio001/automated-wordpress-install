@@ -5,17 +5,15 @@
 # You must be inside the directory where Wordpress will be installed (which should be empty)
 # You must have WP-CLI installed on your machine -> https://wp-cli.org
 
-# Usage:
-
-    # automated-wp-install.sh                       (installs WordPress)
-    # automated-wp-install.sh -plugins              (installs Wordpress + remote plugins specified)
-    # automated-wp-install.sh -plugins -local       (installs Wordpress + remote plugins specified + local plugins specified)
-
-# Version 1.0.1
+DIR="${BASH_SOURCE%/*}"
+if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
 
 # Generate a random username and random password for admin
 RANDOM_USERNAME="$(openssl rand -base64 6)"
 RANDOM_PASSWORD="$(openssl rand -base64 13)"
+
+DB_USER='root'
+DB_PASS='root'
 
 echo "Admin username and password information is displayed below, make sure you write it down."
 echo "Admin Username" "${RANDOM_USERNAME}"
@@ -31,19 +29,21 @@ read email_admin
 #Download the core
 wp core download
 # Create wp-config
-wp config create --dbuser=root --dbpass=root --dbname="${database_name}" --force --extra-php <<PHP
+wp config create --dbuser=$DB_USER --dbpass=$DB_PASS --dbname="${database_name}" --force --extra-php <<PHP
+
 define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true);
 define('WP_DEBUG_DISPLAY', true);
+define( 'SAVEQUERIES', true );
 
 // Directory of the project
 define('APP_ROOT', dirname(__FILE__));
 
-define('WP_HOME', 'http://localhost:8888/${site_home}/');
+define('WP_HOME', 'http://localhost:8888/${site_home}');
 define('WP_SITEURL', WP_HOME);
 
 define('WP_CONTENT_DIR', APP_ROOT . '/_content');
-define('WP_CONTENT_URL', WP_HOME . '_content');
+define('WP_CONTENT_URL', WP_HOME . '/_content');
 PHP
 
 # Rename the wp-content directory
@@ -57,54 +57,7 @@ if [ -n "$1" ] # If there is something in the first parameter
 then
     if [ $1 = '-plugins' ] # If parameter's name is plugins
     then 
-    ### --- REMOTE PLUGINS --- ###
-    echo "Installing remote plugins..."
-    # Install and Activate toolbar-publish-button, incorporate a save button in the toolbar
-    wp plugin install toolbar-publish-button --activate
-
-    # Install and Activate wps-hide-login, changes the login url for the website
-    wp plugin install wps-hide-login --activate
-
-    # Install and Activate cpt-custom-icon, contains the custom icons used for Custom Post Types
-    wp plugin install cpt-custom-icon --activate
-
-    # Install and Activate adminimize
-    # wp plugin install adminimize --activate
-
-    # Install and Activate google-analytics-for-wordpress
-    wp plugin install google-analytics-for-wordpress --activate
-
-    # Install and Activate if-menu
-    wp plugin install if-menu --activate
-
-    # Install and Activate under-construction-page
-    wp plugin install under-construction-page --activate
-
-    # Install and Activate fancy-admin-ui
-    wp plugin install fancy-admin-ui --activate
-
-    # Install and Activate wp plugin install ninja-forms
-    # wp plugin install ninja-forms --activate
-
-    # Install and Activate wp plugin install user-switching
-    wp plugin install user-switching --activate
-
-
-    # Install and Activate wp plugin advanced-cron-manager
-    wp plugin install advanced-cron-manager --activate
-
-    # Install plugin for changing avatars easily
-    wp plugin install wp-user-avatar --activate 
-
-    # Install plugin for configuring logon sreen
-    wp plugin install login-customizer --activate
-
-    # Install plugin for analyzing Worpdpress log files
-    wp plugin install log-viewer --activate    
-
-    # Install plugin for optimizing databases
-    wp plugin install wp-optimize --activate
-
+        source $DIR/remote-plugins.sh
     fi
 fi
 
@@ -112,15 +65,7 @@ if [ -n "$2" ] # If there is something in the second parameter
 then
     if [ $2 = '-local' ] # If parameter's name is local
     then
-    echo "Installing local plugins..."
-        # Install and activate Advanced Custom Fields
-        wp plugin install ../_master_plugins/plugins/advanced-custom-fields-pro.zip --activate
-
-        # Install and activate Updraft Plus
-        wp plugin install ../_master_plugins/plugins/updraftplus.zip --activate
-
-        # Install Admin Columns Pro (don't activate)
-        wp plugin install ../_master_plugins/plugins/admin-columns-pro-4-0-14.zip 
+        source $DIR/local-plugins.sh
     fi
 fi
 
