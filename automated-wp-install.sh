@@ -89,8 +89,6 @@ then
     # Install and Activate wp plugin install user-switching
     wp plugin install user-switching --activate
 
-    # Install and Activate wp plugin install wp-help
-    wp plugin install wp-help --activate
 
     # Install and Activate wp plugin advanced-cron-manager
     wp plugin install advanced-cron-manager --activate
