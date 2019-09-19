@@ -4,6 +4,7 @@
 # of local plugins.
 # You must be inside the directory where Wordpress will be installed (which should be empty)
 # You must have WP-CLI installed on your machine -> https://wp-cli.org
+# Version 0.4
 
 DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
@@ -12,8 +13,6 @@ if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
 RANDOM_USERNAME="$(openssl rand -base64 6)"
 RANDOM_PASSWORD="$(openssl rand -base64 13)"
 
-DB_USER='root'
-DB_PASS='root'
 
 echo "Admin username and password information is displayed below, make sure you write it down."
 echo "Admin Username" "${RANDOM_USERNAME}"
@@ -21,10 +20,46 @@ echo "Admin Password" "${RANDOM_PASSWORD}"
 
 echo -e "Name of the the database to be used? "
 read database_name
-echo -e "Name of the site to be created?"
-read site_home
+
+echo -e "Database User? (default = root)"
+read db_user_input
+if [ -z "$db_user_input" ]
+then
+      DB_USER='root'
+else
+      DB_USER=$db_user_input
+fi
+
+echo -e "Database Password (default = root)" 
+read db_pass_input
+if [ -z "$db_pass_input" ]
+then
+      DB_PASS='root'
+else
+      DB_PASS=$db_pass_input
+fi
+
+echo -e "Site root? (default localhost:8888)"
+read site_root_input
+if [ -z "$site_root_input" ]
+then
+      SITE_ROOT='localhost:8888'
+else
+      SITE_ROOT=$site_root_input
+fi
+
+echo -e "Name of the directory of website? (default = database name)"
+read site_home_input
+if [ -z "$site_home_input" ]
+then
+      SITE_HOME=$database_name
+else
+      SITE_HOME=$site_home_input
+fi
+
 echo -e "Email of the admin user?"
 read email_admin
+
 
 #Download the core
 wp core download
@@ -39,18 +74,18 @@ define( 'SAVEQUERIES', true );
 // Directory of the project
 define('APP_ROOT', dirname(__FILE__));
 
-define('WP_HOME', 'http://localhost:8888/${site_home}');
+define('WP_HOME', 'http://${SITE_ROOT}/${SITE_HOME}');
 define('WP_SITEURL', WP_HOME);
 
-define('WP_CONTENT_DIR', APP_ROOT . '/_content');
-define('WP_CONTENT_URL', WP_HOME . '/_content');
+define('WP_CONTENT_DIR', APP_ROOT . '/wp-content');
+define('WP_CONTENT_URL', WP_HOME . '/wp-content');
 PHP
 
 # Rename the wp-content directory
-mv wp-content _content
+# mv wp-content _content
 
 #Install using the folder we are in as the name of the website in local host
-wp core install --url=localhost:8888/"${database_name}" --title="TBD" --admin_user="${RANDOM_USERNAME}" --admin_password="${RANDOM_PASSWORD}" --admin_email="${email_admin}"
+wp core install --url="${SITE_ROOT}"/"${SITE_HOME}" --title="${SITE_HOME}" --admin_user="${RANDOM_USERNAME}" --admin_password="${RANDOM_PASSWORD}" --admin_email="${email_admin}"
 
 
 if [ -n "$1" ] # If there is something in the first parameter
@@ -72,3 +107,5 @@ fi
 echo "Updating plugins..."
 
 wp plugin update --all
+
+echo "All done, your site has been published at http://${SITE_ROOT}/${SITE_HOME}"

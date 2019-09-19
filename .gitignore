@@ -1,1 +1,3 @@
 plugins/*.*
+local-plugins.sh
+remote-plugins.sh
